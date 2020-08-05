@@ -4,13 +4,13 @@ use WPMedia\TemplateLoader\Loader;
 use WPMedia\TemplateLoader\MetaBox;
 
 /**
- * Initialize QA Templates plugin.
+ * Initialize Template Loader plugin.
  *
  * @since 1.0
  *
  * @return void
  */
-function wp_media_qa_templates() {
+function wp_media_template_loader() {
 	$template_dir = WP_CONTENT_DIR . '/qa-templates/';
 
 	$loader = new Loader( $template_dir );
