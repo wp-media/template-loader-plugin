@@ -11,7 +11,7 @@ use WPMedia\TemplateLoader\MetaBox;
  * @return void
  */
 function wp_media_template_loader() {
-	$template_dir = WP_CONTENT_DIR . '/qa-templates/';
+	$template_dir = WP_CONTENT_DIR . '/rocket-test-data/templates/';
 
 	$loader = new Loader( $template_dir );
 	add_filter( 'template_include', [ $loader, 'load_template' ] );
