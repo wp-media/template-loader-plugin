@@ -16,7 +16,7 @@ class Loader {
 	 *
 	 * @param string $template_dir The directory for custom templates.
 	 */
-	public function __construct($template_dir) {
+	public function __construct( $template_dir ) {
 		$this->template_dir = $template_dir;
 	}
 
@@ -30,13 +30,14 @@ class Loader {
 	 * @return string Path to the custom template to load instead.
 	 */
 	public function load_template( $template ) {
-			if ( ! is_page( 'qa-template' ) ) {
-				return $template;
-			}
+		global $post;
 
-			$template_dir  = WP_CONTENT_DIR . '/qa-templates/';
-			$template_file = get_option( 'wp_media_qa_current_template', 'template.php' );
+		$test_template = get_post_meta( $post->ID, '_test_template', true );
 
-			return $template_dir . $template_file;
+		if ( ! $test_template ) {
+			return $template;
+		}
+
+		return $this->template_dir . $test_template;
 	}
 }

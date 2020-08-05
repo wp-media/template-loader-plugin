@@ -30,8 +30,7 @@ class MetaBox {
 	 * @return void
 	 */
 	public function add_metabox() {
-		$template_dir = WP_CONTENT_DIR . '/qa-templates/';
-		$files        = list_files( $template_dir, 1 );
+		$files        = list_files( $this->template_dir, 1 );
 		$filenames    = [];
 
 		foreach ( $files as $file ) {
@@ -64,23 +63,22 @@ class MetaBox {
 	 * @return void
 	 */
 	public function render_template_chooser( $post, $box_array ) {
-		if ( 'qa-template' !== $post->post_name ) {
-			echo '<p>QA Templates are not available for this page.</p>';
-
-			return;
-		}
-
 		wp_nonce_field( 'wp-media-set-qa-template', 'wp-media-set-qa-template' );
 
 		$filenames = $box_array['args'];
-		$selected  = get_option( 'wp_media_qa_current_template', 'template.php' );
+		$selected  = get_post_meta( $post->ID, 'w_test_template', true );
+
+		if ( ! $selected ) {
+			$selected = '';
+		}
+
 		echo '<label for="wp_media_qa_template_select">Choose a template:</label>';
 		echo '<select name="wp_media_qa_template_select" id="wp-media-qa-template-select" 
 					class="components-select-control__input" style="max-width:218px">';
+		echo '<option value="" ' . selected( $selected, '' ) . '>' . __( 'Theme default page.') . '</option>';
 
 		foreach ( $filenames as $filename ) {
 			echo '<option value="' . $filename . '" ';
-			selected( $selected, $filename );
 			echo '>' . $filename . '</option>';
 		}
 
@@ -103,9 +101,9 @@ class MetaBox {
 
 		$template = isset( $_POST['wp_media_qa_template_select'] )
 			? sanitize_text_field( $_POST['wp_media_qa_template_select'] )
-			: 'template.php';
+			: '';
 
-		update_option( 'wp_media_qa_current_template', $template );
+		update_post_meta( $post_id, '_test_template', $template );
 	}
 
 	/**
