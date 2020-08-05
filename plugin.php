@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: WP Media | Template Loader for QA
- * Description: A WordPress plugin to allow QA to load specific page templates regardless of theme.
- * Plugin URI: https://github.com/wp-media/qa-template-loader
+ * Plugin Name: WP Media | Template Loader plugin.
+ * Description: A WordPress plugin to loading specific page templates regardless of theme.
+ * Plugin URI: https://github.com/wp-media/template-loader-plugin
  * Version: 1.0.0
  * Author: WP Rocket PHP Engineering Team
  * Author URI: https://wp-rocket.me
@@ -16,27 +16,25 @@ add_action( 'plugins_loaded', 'wp_media_qa_templates' );
 /**
  * Initialize QA Templates plugin.
  *
- * @return void
  * @since 1.0
  *
+ * @return void
  */
 function wp_media_qa_templates() {
 	add_filter( 'template_include', 'wp_media_qa_load_custom_template' );
 
-	if ( is_admin() ) {
-		add_action( 'add_meta_boxes', 'wp_media_qa_add_metabox' );
-		add_action( 'save_post', 'wp_media_qa_save_qa_template' );
-	}
+	add_action( 'add_meta_boxes', 'wp_media_qa_add_metabox' );
+	add_action( 'save_post', 'wp_media_qa_save_qa_template' );
 }
 
 /**
  * Load a custom template.
  *
+ * @since 1.0
+ *
  * @param string $template Path to current WP template.
  *
  * @return string Path to template to load for QA.
- * @since 1.0
- *
  */
 function wp_media_qa_load_custom_template( $template ) {
 	if ( ! is_page( 'qa-template' ) ) {
@@ -62,7 +60,15 @@ function wp_media_qa_add_metabox() {
 		return;
 	}
 
-	add_meta_box( 'wp-media-qa-template-chooser', __( 'Choose Test Template' ), 'wp_media_qa_render_template_chooser', 'page', 'side', 'high', $filenames );
+	add_meta_box(
+		'wp-media-qa-template-chooser',
+		__( 'Choose Test Template' ),
+		'wp_media_qa_render_template_chooser',
+		'page',
+		'side',
+		'high',
+		$filenames
+	);
 }
 
 function wp_media_qa_render_template_chooser( $post, $box_array ) {
@@ -76,8 +82,8 @@ function wp_media_qa_render_template_chooser( $post, $box_array ) {
 
 	$filenames = $box_array['args'];
 	$selected  = get_option( 'wp_media_qa_current_template', 'template.php' );
-
-	echo '<select name="wp-media-qa-template-select" id="wp-media-qa-template-select" 
+	echo '<label for="wp_media_qa_template_select">Choose a template:</label>';
+	echo '<select name="wp_media_qa_template_select" id="wp-media-qa-template-select" 
 					class="components-select-control__input" style="max-width:218px">';
 
 	foreach ( $filenames as $filename ) {
@@ -89,19 +95,19 @@ function wp_media_qa_render_template_chooser( $post, $box_array ) {
 	echo '</select>';
 }
 
-function wp_media_qa_save_qa_template( $post_id, $post, $update ) {
-//	if ( ! wp_media_qa_ok_to_save( $post_id, $post ) ) {
-//		return $post_id;
-//	}
+function wp_media_qa_save_qa_template( $post_id ) {
+	if ( ! wp_media_qa_ok_to_save( $post_id ) ) {
+		return;
+	}
 
-	$template = isset( $_POST['wp-media-qa-template-select'] )
-		? sanitize_text_field( $_POST['wp-media-qa-template-select'] )
+	$template = isset( $_POST['wp_media_qa_template_select'] )
+		? sanitize_text_field( $_POST['wp_media_qa_template_select'] )
 		: 'template.php';
 
 	update_option( 'wp_media_qa_current_template', $template );
 }
 
-function wp_media_qa_ok_to_save( $post_id, $post ) {
+function wp_media_qa_ok_to_save( $post_id ) {
 	if ( ! isset( $_POST['wp-media-set-qa-template'] ) ||
 	     ! wp_verify_nonce( $_POST['wp-media-set-qa-template'], 'wp-media-set-qa-template' ) ) {
 		return false;
@@ -112,11 +118,6 @@ function wp_media_qa_ok_to_save( $post_id, $post ) {
 	}
 
 	if ( defined( "DOING_AUTOSAVE" ) && DOING_AUTOSAVE ) {
-		return false;
-	}
-
-	$slug = "page";
-	if ( $slug != $post->post_type ) {
 		return false;
 	}
 
