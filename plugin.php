@@ -16,9 +16,9 @@ add_action( 'plugins_loaded', 'wp_media_qa_templates' );
 /**
  * Initialize QA Templates plugin.
  *
+ * @return void
  * @since 1.0
  *
- * @return void
  */
 function wp_media_qa_templates() {
 	add_filter( 'template_include', 'wp_media_qa_load_custom_template' );
@@ -32,11 +32,11 @@ function wp_media_qa_templates() {
 /**
  * Load a custom template.
  *
- * @since 1.0
- *
  * @param string $template Path to current WP template.
  *
  * @return string Path to template to load for QA.
+ * @since 1.0
+ *
  */
 function wp_media_qa_load_custom_template( $template ) {
 	if ( ! is_page( 'qa-template' ) ) {
@@ -75,49 +75,50 @@ function wp_media_qa_render_template_chooser( $post, $box_array ) {
 	wp_nonce_field( 'wp-media-set-qa-template', 'wp-media-set-qa-template' );
 
 	$filenames = $box_array['args'];
+	$selected  = get_option( 'wp_media_qa_current_template', 'template.php' );
 
-	echo '<select>';
+	echo '<select name="wp-media-qa-template-select" id="wp-media-qa-template-select" 
+					class="components-select-control__input" style="max-width:218px">';
 
 	foreach ( $filenames as $filename ) {
-		echo '<option value="' . $filename . '">' . $filename . '</option>';
+		echo '<option value="' . $filename . '" ';
+		selected( $selected, $filename );
+		echo '>' . $filename . '</option>';
 	}
+
 	echo '</select>';
 }
 
 function wp_media_qa_save_qa_template( $post_id, $post, $update ) {
-	if ( ! isset( $_POST["meta-box-nonce"] ) || ! wp_verify_nonce( $_POST["meta-box-nonce"], basename( __FILE__ ) ) ) {
-		return $post_id;
+//	if ( ! wp_media_qa_ok_to_save( $post_id, $post ) ) {
+//		return $post_id;
+//	}
+
+	$template = isset( $_POST['wp-media-qa-template-select'] )
+		? sanitize_text_field( $_POST['wp-media-qa-template-select'] )
+		: 'template.php';
+
+	update_option( 'wp_media_qa_current_template', $template );
+}
+
+function wp_media_qa_ok_to_save( $post_id, $post ) {
+	if ( ! isset( $_POST['wp-media-set-qa-template'] ) ||
+	     ! wp_verify_nonce( $_POST['wp-media-set-qa-template'], 'wp-media-set-qa-template' ) ) {
+		return false;
 	}
 
 	if ( ! current_user_can( "edit_post", $post_id ) ) {
-		return $post_id;
+		return false;
 	}
 
 	if ( defined( "DOING_AUTOSAVE" ) && DOING_AUTOSAVE ) {
-		return $post_id;
+		return false;
 	}
 
-	$slug = "post";
+	$slug = "page";
 	if ( $slug != $post->post_type ) {
-		return $post_id;
+		return false;
 	}
 
-	$meta_box_text_value     = "";
-	$meta_box_dropdown_value = "";
-	$meta_box_checkbox_value = "";
-
-	if ( isset( $_POST["meta-box-text"] ) ) {
-		$meta_box_text_value = $_POST["meta-box-text"];
-	}
-	update_post_meta( $post_id, "meta-box-text", $meta_box_text_value );
-
-	if ( isset( $_POST["meta-box-dropdown"] ) ) {
-		$meta_box_dropdown_value = $_POST["meta-box-dropdown"];
-	}
-	update_post_meta( $post_id, "meta-box-dropdown", $meta_box_dropdown_value );
-
-	if ( isset( $_POST["meta-box-checkbox"] ) ) {
-		$meta_box_checkbox_value = $_POST["meta-box-checkbox"];
-	}
-	update_post_meta( $post_id, "meta-box-checkbox", $meta_box_checkbox_value );
+	return true;
 }
