@@ -5,6 +5,23 @@ namespace WPMedia\TemplateLoader;
 use WP_Post;
 
 class MetaBox {
+
+	/**
+	 * The directory for custom templates.
+	 *
+	 * @var string template_dir
+	 */
+	private $template_dir;
+
+	/**
+	 * MetaBox constructor.
+	 *
+	 * @param string $template_dir The directory for custom templates.
+	 */
+	public function __construct( $template_dir ) {
+		$this->template_dir = $template_dir;
+	}
+
 	/**
 	 * Add the Template Loader Metabox to the QA Templates page.
 	 *

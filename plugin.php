@@ -15,6 +15,7 @@
 defined( 'ABSPATH' ) || die();
 
 require_once 'functions.php';
+require_once 'Loader.php';
 require_once 'MetaBox.php';
 
 add_action( 'plugins_loaded', 'wp_media_qa_templates' );
