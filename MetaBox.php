@@ -40,7 +40,9 @@ class MetaBox {
 		if ( empty( $filenames ) ) {
 			return;
 		}
-
+		
+		sort( $filenames );
+		
 		add_meta_box(
 			'wp-media-qa-template-chooser',
 			__( 'Choose Test Template' ),
