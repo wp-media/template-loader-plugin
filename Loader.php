@@ -31,8 +31,12 @@ class Loader {
 	 */
 	public function load_template( $template ) {
 		global $post;
-
-		$test_template = get_post_meta( $post->ID, '_test_template', true );
+		
+		$test_template = '';
+		
+		if ( is_object( $post ) ){
+			$test_template = get_post_meta( $post->ID, '_test_template', true );
+		}
 
 		if ( ! $test_template ) {
 			return $template;
