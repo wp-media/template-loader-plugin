@@ -34,7 +34,7 @@ class Loader {
 		
 		$test_template = '';
 		
-		if ( is_object( $post ){
+		if ( is_object( $post ) ){
 			$test_template = get_post_meta( $post->ID, '_test_template', true );
 		}
 
