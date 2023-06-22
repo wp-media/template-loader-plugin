@@ -68,19 +68,24 @@ class MetaBox {
 		wp_nonce_field( 'wp-media-set-qa-template', 'wp-media-set-qa-template' );
 
 		$filenames = $box_array['args'];
-		
 		$selected  = get_post_meta( $post->ID, '_test_template', true );
-		
-		if ( ! $selected ) {
-			$selected = '';
-		}
 		
 		echo '<label for="wp_media_qa_template_select">Choose a template:</label>';
 		echo '<select name="wp_media_qa_template_select" id="wp-media-qa-template-select" class="components-select-control__input" style="max-width:218px">';
-		$selected = ! empty( $selected ) ? $selected : __( 'Theme default page.');
-		echo '<option value="$selected"> '. $selected . '</option>';
+
+		echo ( ! $selected )
+			? '<option value="">' . __( 'Theme default page.') . '</option>'
+			: '<option value="' . $selected . '">' . $selected . '</option>';
+		/*
+		$filenames_flipped = array_flip( $filenames);
+		unset( $filenames_flipped[$selected] );
+
+		$filenames = array_flip( $filenames_flipped);
+		*/
+
+		$remainingTemplates = array_diff($filenames, [$selected]);
 		
-		foreach ( $filenames as $filename ) {
+		foreach ( $remainingTemplates as $filename ) {
 			echo '<option value="' . $filename . '" ';
 			echo '>' . $filename . '</option>';
 		}
