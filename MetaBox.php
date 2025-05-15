@@ -68,7 +68,7 @@ class MetaBox {
 		wp_nonce_field( 'wp-media-set-qa-template', 'wp-media-set-qa-template' );
 
 		$filenames = $box_array['args'];
-		$selected  = get_post_meta( $post->ID, 'w_test_template', true );
+		$selected  = get_post_meta( $post->ID, '_test_template', true );
 
 		if ( ! $selected ) {
 			$selected = '';
@@ -81,7 +81,7 @@ class MetaBox {
 
 		foreach ( $filenames as $filename ) {
 			echo '<option value="' . $filename . '" ';
-			echo '>' . $filename . '</option>';
+			echo selected( $selected, $filename ) . '>' . $filename . '</option>';
 		}
 
 		echo '</select>';
